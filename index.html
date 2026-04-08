@@ -7,6 +7,9 @@
   <title>The Things We've Said</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
+    * { color: white !important; }
+  </style>
+  <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 ```
@@ -175,7 +178,8 @@ html, body {
   border-top-color: rgba(184,160,232,0.25);
 }
 
-.star:hover .phrase-card {
+.star:hover .phrase-card,
+.star.active .phrase-card {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
@@ -186,7 +190,8 @@ html, body {
   top: calc(100% + 14px);
   transform: translateX(-50%) translateY(-6px);
 }
-.star.flip-down:hover .phrase-card {
+.star.flip-down:hover .phrase-card,
+.star.flip-down.active .phrase-card {
   transform: translateX(-50%) translateY(0);
 }
 .star.flip-down .phrase-card::after {
@@ -372,6 +377,23 @@ for (let i = 0; i < 160; i++) {
   d.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;opacity:${(Math.random()*0.5+0.15).toFixed(2)};--t:${(2+Math.random()*5).toFixed(1)}s;--d:${(Math.random()*6).toFixed(1)}s;`;
   document.querySelector('.nebula').appendChild(d);
 }
+
+// ── Tap/click to lock card open ──
+document.querySelectorAll('.star').forEach(star => {
+  star.addEventListener('click', e => {
+    e.stopPropagation();
+    const isActive = star.classList.contains('active');
+    // close all others
+    document.querySelectorAll('.star.active').forEach(s => s.classList.remove('active'));
+    // toggle this one
+    if (!isActive) star.classList.add('active');
+  });
+});
+
+// tap empty space to close
+document.addEventListener('click', () => {
+  document.querySelectorAll('.star.active').forEach(s => s.classList.remove('active'));
+});
 </script>
 
 </body>
