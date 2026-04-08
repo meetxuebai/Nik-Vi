@@ -8,24 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     * { color: white !important; }
-  </style>
-  <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 ```
-:root {
-  --navy: #04061a;
-  --deep: #080b2a;
-  --nebula-purple: #2d1b5e;
-  --nebula-rose: #5c1a3a;
-  --nebula-blue: #0d2b6e;
-  --star-core: #ffffff;
-  --star-glow: #c8d8ff;
-  --accent-gold: #f0c060;
-  --accent-lavender: #b8a0e8;
-  --text-card: #f0eaff;
-}
-
 html, body {
   width: 100%; height: 100%;
   background-color: #04061a !important;
@@ -34,7 +19,9 @@ html, body {
   cursor: crosshair;
 }
 
-/* ── Nebula background ── */
+/* ════════════════════════════════
+   STAR MAP (base layer)
+════════════════════════════════ */
 .nebula {
   position: fixed; inset: 0; z-index: 0;
   background-color: #04061a;
@@ -45,355 +32,514 @@ html, body {
     radial-gradient(ellipse 40% 30% at 10% 80%, rgba(45,27,94,0.3) 0%, transparent 60%),
     radial-gradient(ellipse 55% 40% at 90% 20%, rgba(92,26,58,0.25) 0%, transparent 65%);
 }
-
-/* grain overlay */
 .nebula::after {
   content: '';
   position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.35;
-  pointer-events: none;
+  opacity: 0.35; pointer-events: none;
 }
 
-/* ── Title ── */
 .title {
-  position: fixed;
-  top: 38px; left: 50%;
+  position: fixed; top: 38px; left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
-  text-align: center;
-  pointer-events: none;
-  user-select: none;
+  z-index: 10; text-align: center;
+  pointer-events: none; user-select: none;
+  opacity: 0; transition: opacity 1.5s ease;
 }
-
+.title.visible { opacity: 1; }
 .title h1 {
-  font-family: 'Cinzel', serif;
-  font-weight: 400;
-  font-size: clamp(16px, 2.2vw, 26px);
-  letter-spacing: 0.22em;
-  color: #d8c8ff;
-  text-transform: uppercase;
-  opacity: 1;
+  font-family: 'Cinzel', serif; font-weight: 400;
+  font-size: clamp(16px, 2.2vw, 26px); letter-spacing: 0.22em;
+  color: #d8c8ff !important; text-transform: uppercase;
   text-shadow: 0 0 30px rgba(184,160,232,0.8), 0 0 60px rgba(184,160,232,0.4);
 }
-
 .title .subtitle {
-  margin-top: 6px;
-  font-size: clamp(12px, 1.2vw, 16px);
-  letter-spacing: 0.35em;
-  color: rgba(200,216,255,0.75);
-  font-style: italic;
-  text-transform: uppercase;
+  margin-top: 6px; font-size: clamp(12px, 1.2vw, 16px);
+  letter-spacing: 0.35em; color: rgba(200,216,255,0.75) !important;
+  font-style: italic; text-transform: uppercase;
 }
-
 .title-line {
-  margin: 10px auto 0;
-  width: 120px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-lavender), transparent);
+  margin: 10px auto 0; width: 120px; height: 1px;
+  background: linear-gradient(90deg, transparent, #b8a0e8, transparent);
   opacity: 0.4;
 }
 
-/* ── Sky canvas ── */
-#sky {
-  position: fixed; inset: 0; z-index: 1;
-}
+#sky { position: fixed; inset: 0; z-index: 1; }
+#constellation-lines { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 
-/* ── Constellation SVG lines ── */
-#constellation-lines {
-  position: fixed; inset: 0; z-index: 2;
-  pointer-events: none;
-}
-
-/* ── Stars ── */
-.star {
-  position: fixed;
-  z-index: 5;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-}
-
+.star { position: fixed; z-index: 5; transform: translate(-50%,-50%); cursor: pointer; }
 .star-dot {
-  border-radius: 50%;
-  background: var(--star-core);
-  box-shadow:
-    0 0 3px 1px rgba(200,216,255,0.8),
-    0 0 8px 2px rgba(184,160,232,0.4),
-    0 0 16px 4px rgba(100,120,255,0.2);
-  animation: twinkle var(--twinkle-dur, 3s) ease-in-out infinite;
-  animation-delay: var(--twinkle-delay, 0s);
+  border-radius: 50%; background: white;
+  box-shadow: 0 0 3px 1px rgba(200,216,255,0.8), 0 0 8px 2px rgba(184,160,232,0.4), 0 0 16px 4px rgba(100,120,255,0.2);
+  animation: twinkle var(--twinkle-dur,3s) ease-in-out infinite;
+  animation-delay: var(--twinkle-delay,0s);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-
 @keyframes twinkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  40%       { opacity: 0.4; transform: scale(0.7); }
-  70%       { opacity: 0.85; transform: scale(0.95); }
+  0%,100% { opacity:1; transform:scale(1); }
+  40%      { opacity:0.4; transform:scale(0.7); }
+  70%      { opacity:0.85; transform:scale(0.95); }
 }
-
 .star:hover .star-dot {
-  animation-play-state: paused;
-  transform: scale(2.5);
-  box-shadow:
-    0 0 6px 3px rgba(255,255,255,0.95),
-    0 0 18px 8px rgba(200,216,255,0.7),
-    0 0 40px 16px rgba(184,160,232,0.45),
-    0 0 70px 25px rgba(100,120,255,0.25);
+  animation-play-state: paused; transform: scale(2.5);
+  box-shadow: 0 0 6px 3px rgba(255,255,255,0.95), 0 0 18px 8px rgba(200,216,255,0.7), 0 0 40px 16px rgba(184,160,232,0.45), 0 0 70px 25px rgba(100,120,255,0.25);
 }
-
-/* ── Phrase card ── */
 .phrase-card {
-  position: absolute;
-  bottom: calc(100% + 14px);
-  left: 50%;
+  position: absolute; bottom: calc(100% + 14px); left: 50%;
   transform: translateX(-50%) translateY(6px);
-  background: rgba(8, 6, 30, 0.82);
-  border: 1px solid rgba(184,160,232,0.25);
-  border-radius: 10px;
-  padding: 12px 18px;
-  width: max-content;
-  max-width: 220px;
-  text-align: center;
-  color: #ffffff;
-  font-size: 13.5px;
-  font-style: italic;
-  line-height: 1.55;
-  letter-spacing: 0.02em;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow:
-    0 0 20px rgba(184,160,232,0.12),
-    0 4px 24px rgba(0,0,0,0.5);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  white-space: normal;
+  background: rgba(8,6,30,0.82); border: 1px solid rgba(184,160,232,0.25);
+  border-radius: 10px; padding: 12px 18px;
+  width: max-content; max-width: 220px; text-align: center;
+  color: #fff !important; font-size: 13.5px; font-style: italic;
+  line-height: 1.55; letter-spacing: 0.02em;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px rgba(184,160,232,0.12), 0 4px 24px rgba(0,0,0,0.5);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease; white-space: normal;
 }
-
 .phrase-card::after {
-  content: '';
-  position: absolute;
-  top: 100%; left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%); border: 6px solid transparent;
   border-top-color: rgba(184,160,232,0.25);
 }
+.star:hover .phrase-card, .star.active .phrase-card {
+  opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto;
+}
+.star.flip-down .phrase-card { bottom: auto; top: calc(100% + 14px); transform: translateX(-50%) translateY(-6px); }
+.star.flip-down:hover .phrase-card, .star.flip-down.active .phrase-card { transform: translateX(-50%) translateY(0); }
+.star.flip-down .phrase-card::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: rgba(184,160,232,0.25); }
 
-.star:hover .phrase-card,
-.star.active .phrase-card {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-.star.flip-down .phrase-card {
-  bottom: auto;
-  top: calc(100% + 14px);
-  transform: translateX(-50%) translateY(-6px);
-}
-.star.flip-down:hover .phrase-card,
-.star.flip-down.active .phrase-card {
-  transform: translateX(-50%) translateY(0);
-}
-.star.flip-down .phrase-card::after {
-  top: auto; bottom: 100%;
-  border-top-color: transparent;
-  border-bottom-color: rgba(184,160,232,0.25);
-}
-
-/* ── Background micro-stars ── */
 .bg-star {
-  position: fixed;
-  border-radius: 50%;
-  background: white;
-  pointer-events: none;
-  z-index: 1;
+  position: fixed; border-radius: 50%; background: white;
+  pointer-events: none; z-index: 1;
   animation: twinkle var(--t,4s) ease-in-out infinite;
   animation-delay: var(--d,0s);
 }
 
-/* ── Hint ── */
 .hint {
-  position: fixed;
-  bottom: 28px; left: 50%;
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  z-index: 10; font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.3em; color: rgba(184,160,232,0.5) !important;
+  text-transform: uppercase; pointer-events: none;
+  opacity: 0; transition: opacity 1s ease;
+}
+.hint.visible { opacity: 1; }
+
+/* ════════════════════════════════
+   INTRO OVERLAY
+════════════════════════════════ */
+#intro {
+  position: fixed; inset: 0; z-index: 100;
+  background-color: #04061a;
+  overflow: hidden; cursor: pointer; user-select: none;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+/* intro shares the same nebula look */
+#intro-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background-color: #04061a;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(45,27,94,0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 80% 70%, rgba(92,26,58,0.45) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 50% at 55% 15%, rgba(13,43,110,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 10% 80%, rgba(45,27,94,0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 90% 20%, rgba(92,26,58,0.25) 0%, transparent 65%);
+}
+
+/* twinkling micro-stars inside intro */
+.intro-star {
+  position: absolute; border-radius: 50%; background: white;
+  pointer-events: none;
+  animation: twinkle var(--t,3s) ease-in-out infinite;
+  animation-delay: var(--d,0s);
+}
+
+/* centre content */
+#intro-center {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 48px;
+  width: 85vw; max-width: 560px;
+  text-align: center;
+}
+
+/* "Begin Journey" shown on slide 0 */
+#begin-block {
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  transition: opacity 0.5s ease;
+}
+#begin-label {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(18px, 3vw, 28px);
+  letter-spacing: 0.3em;
+  color: #d8c8ff !important;
+  text-transform: uppercase;
+  text-shadow: 0 0 30px rgba(184,160,232,0.7);
+  animation: beginGlow 3s ease-in-out infinite;
+}
+@keyframes beginGlow {
+  0%,100% { text-shadow: 0 0 20px rgba(184,160,232,0.5); }
+  50%      { text-shadow: 0 0 50px rgba(184,160,232,0.9), 0 0 80px rgba(184,160,232,0.4); }
+}
+#begin-arrow {
+  width: 28px; height: 28px;
+  border-right: 2px solid rgba(184,160,232,0.7);
+  border-bottom: 2px solid rgba(184,160,232,0.7);
+  transform: rotate(45deg);
+  animation: arrowBounce 1.6s ease-in-out infinite;
+  margin-top: 4px;
+}
+@keyframes arrowBounce {
+  0%,100% { transform: rotate(45deg) translateY(0);   opacity: 0.5; }
+  50%      { transform: rotate(45deg) translateY(8px); opacity: 1; }
+}
+
+/* story text shown on slides 1+ */
+#intro-message {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px, 3.8vw, 32px);
+  font-style: italic; font-weight: 300;
+  letter-spacing: 0.05em; line-height: 1.6;
+  color: rgba(220,230,255,0.93) !important;
+  text-shadow: 0 0 40px rgba(150,180,255,0.4);
+  min-height: 3em;
+  transition: opacity 1.2s ease;
+  display: none;
+  text-align: center;
+}
+
+/* tap hint at bottom */
+#intro-tap {
+  position: absolute; bottom: 36px; left: 50%;
   transform: translateX(-50%);
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.35em; color: rgba(184,160,232,0.4) !important;
+  text-transform: uppercase; white-space: nowrap; z-index: 2;
+  animation: tapPulse 2.5s ease-in-out infinite;
+}
+@keyframes tapPulse { 0%,100%{opacity:0.3;} 50%{opacity:0.8;} }
+
+/* skip button */
+#intro-skip {
+  position: absolute; top: 24px; right: 28px;
   z-index: 10;
   font-family: 'Cinzel', serif;
   font-size: 10px;
   letter-spacing: 0.3em;
-  color: rgba(184,160,232,0.3);
+  color: rgba(184,160,232,0.45) !important;
   text-transform: uppercase;
-  pointer-events: none;
-  animation: fadeHint 6s ease forwards;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(184,160,232,0.2);
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
-@keyframes fadeHint {
-  0%   { opacity: 0; }
-  20%  { opacity: 1; }
-  75%  { opacity: 1; }
-  100% { opacity: 0; }
+#intro-skip:hover {
+  color: rgba(184,160,232,0.9) !important;
+  border-color: rgba(184,160,232,0.6);
 }
+#warp { position:fixed; inset:0; z-index:200; pointer-events:none; opacity:0; }
+#warp canvas { position:absolute; inset:0; width:100%; height:100%; }
 ```
 
   </style>
 </head>
 <body>
 
-  <div class="nebula"></div>
+  <!-- STAR MAP -->
 
+  <div class="nebula"></div>
   <div class="title">
     <h1>The Things We've Said</h1>
     <div class="subtitle">in the past 100 days</div>
     <div class="title-line"></div>
   </div>
-
-<svg id="constellation-lines" xmlns="http://www.w3.org/2000/svg"></svg>
-
+  <svg id="constellation-lines" xmlns="http://www.w3.org/2000/svg"></svg>
   <div id="sky"></div>
+  <div class="hint">tap a star</div>
 
-  <div class="hint">hover over a star</div>
+  <!-- WARP -->
+
+  <div id="warp"><canvas id="warp-canvas"></canvas></div>
+
+  <!-- INTRO -->
+
+  <div id="intro">
+    <div id="intro-bg"></div>
+
+```
+<div id="intro-center">
+  <div id="begin-block">
+    <div id="begin-label">Begin Journey</div>
+    <div id="begin-arrow"></div>
+  </div>
+  <div id="intro-message"></div>
+</div>
+
+<div id="intro-tap">tap anywhere to continue</div>
+<div id="intro-skip">Skip ›</div>
+```
+
+  </div>
 
 <script>
+// ── STAR MAP DATA ─────────────────────────
 const groups = [
-  {
-    name: "Orion",
-    stars: [
-      { id: "o1", x: 28, y: 38, size: 3.5, phrase: "Fruitcakes and Snowflakes" },
-      { id: "o2", x: 31, y: 42, size: 3,   phrase: "A young Whippersnapper" },
-      { id: "o3", x: 34, y: 46, size: 3.5, phrase: "✨Jazz Hands✨" },
-      { id: "o4", x: 24, y: 32, size: 2.5, phrase: "Sawing Logs" },
-      { id: "o5", x: 37, y: 31, size: 2.5, phrase: "Yes! And..." },
-      { id: "o6", x: 26, y: 57, size: 2,   phrase: "Let's make like a tree!" },
-      { id: "o7", x: 36, y: 55, size: 2,   phrase: "What the hay!" },
-    ],
-    lines: [["o1","o2"],["o2","o3"],["o4","o1"],["o5","o3"],["o1","o6"],["o3","o7"],["o4","o5"]]
-  },
-  {
-    name: "Cassiopeia",
-    stars: [
-      { id: "c1", x: 58, y: 14, size: 2.5, phrase: "Call me Dick(Richard)!" },
-      { id: "c2", x: 63, y: 11, size: 3,   phrase: "'I've never been with a man before'" },
-      { id: "c3", x: 68, y: 14, size: 2.5, phrase: "Deeply Closeted" },
-      { id: "c4", x: 73, y: 11, size: 2,   phrase: "Straight as a Rainbow" },
-      { id: "c5", x: 78, y: 14, size: 2.5, phrase: "I gotta keep up appearances" },
-    ],
-    lines: [["c1","c2"],["c2","c3"],["c3","c4"],["c4","c5"]]
-  },
-  {
-    name: "BigDipper",
-    stars: [
-      { id: "d1", x: 12, y: 20, size: 2.5, phrase: "By God!" },
-      { id: "d2", x: 17, y: 18, size: 2.5, phrase: "It'd be rude to say yes!" },
-      { id: "d3", x: 17, y: 23, size: 2,   phrase: "Bigger Galaxies..." },
-      { id: "d4", x: 12, y: 25, size: 2,   phrase: "More Mass!" },
-      { id: "d5", x: 22, y: 17, size: 2.5, phrase: "A man has his needs" },
-      { id: "d6", x: 26, y: 15, size: 2,   phrase: "Hard STOP" },
-      { id: "d7", x: 30, y: 14, size: 2,   phrase: "Kinks, sausages, and flutes(#veryserious)" },
-    ],
-    lines: [["d1","d2"],["d2","d3"],["d3","d4"],["d4","d1"],["d2","d5"],["d5","d6"],["d6","d7"]]
-  },
-  {
-    name: "Planets",
-    stars: [
-      { id: "p1", x: 72, y: 42, size: 4,   phrase: "Would you care for a breath mint?" },
-      { id: "p2", x: 79, y: 38, size: 3,   phrase: "Le burger" },
-      { id: "p3", x: 85, y: 44, size: 3.5, phrase: "I'm...overwhelmed" },
-      { id: "p4", x: 82, y: 51, size: 2.5, phrase: "Somethinggggg (r)wisible?" },
-      { id: "p5", x: 74, y: 50, size: 2,   phrase: "No news is bad news" },
-      { id: "p6", x: 89, y: 37, size: 2,   phrase: "Surely(Shirley)" },
-    ],
-    lines: [["p1","p2"],["p2","p3"],["p3","p4"],["p4","p5"],["p5","p1"],["p2","p6"]]
-  },
-  {
-    name: "SpiralArm",
-    stars: [
-      { id: "s1", x: 45, y: 72, size: 2,   phrase: "In the civilized latitudes" },
-      { id: "s2", x: 50, y: 68, size: 2.5, phrase: "sorry WHAT?" },
-      { id: "s3", x: 55, y: 66, size: 3,   phrase: "Goin' Just Going'" },
-      { id: "s4", x: 60, y: 65, size: 2.5, phrase: "More soon!" },
-      { id: "s5", x: 65, y: 67, size: 2,   phrase: "Use Lube the way it's intended" },
-      { id: "s6", x: 69, y: 72, size: 2,   phrase: "How's your thes...?" },
-      { id: "s7", x: 48, y: 78, size: 1.8, phrase: "Those poor sick blind kids" },
-      { id: "s8", x: 57, y: 76, size: 1.8, phrase: "ERECTION!" },
-    ],
-    lines: [["s1","s2"],["s2","s3"],["s3","s4"],["s4","s5"],["s5","s6"],["s1","s7"],["s7","s8"],["s8","s4"]]
-  },
-  {
-    name: "Scatter",
-    stars: [
-      { id: "w1", x: 8,  y: 55, size: 1.8, phrase: "I'm great with the muddler" },
-      { id: "w2", x: 90, y: 62, size: 2,   phrase: "What went so wrong?" },
-      { id: "w3", x: 42, y: 22, size: 1.5, phrase: "Horn-y" },
-      { id: "w4", x: 50, y: 85, size: 1.8, phrase: "What's good food without a little adrenaline and fear for your life?" },
-      { id: "w5", x: 15, y: 72, size: 1.5, phrase: "I fixed my ballcock, and you got your ass fingered" },
-      { id: "w6", x: 88, y: 82, size: 1.5, phrase: "Poorly evolved" },
-      { id: "w7", x: 35, y: 88, size: 1.5, phrase: "You're becoming a Queeaa(r)" },
-    ],
-    lines: []
-  }
+  { name:"Orion", stars:[
+    {id:"o1",x:28,y:38,size:3.5,phrase:"Fruitcakes and Snowflakes"},
+    {id:"o2",x:31,y:42,size:3,  phrase:"A young Whippersnapper"},
+    {id:"o3",x:34,y:46,size:3.5,phrase:"✨Jazz Hands✨"},
+    {id:"o4",x:24,y:32,size:2.5,phrase:"Sawing Logs"},
+    {id:"o5",x:37,y:31,size:2.5,phrase:"Yes! And..."},
+    {id:"o6",x:26,y:57,size:2,  phrase:"Let's make like a tree!"},
+    {id:"o7",x:36,y:55,size:2,  phrase:"What the hay!"},
+  ], lines:[["o1","o2"],["o2","o3"],["o4","o1"],["o5","o3"],["o1","o6"],["o3","o7"],["o4","o5"]]},
+  { name:"Cassiopeia", stars:[
+    {id:"c1",x:58,y:14,size:2.5,phrase:"Call me Dick(Richard)!"},
+    {id:"c2",x:63,y:11,size:3,  phrase:"'I've never been with a man before'"},
+    {id:"c3",x:68,y:14,size:2.5,phrase:"Deeply Closeted"},
+    {id:"c4",x:73,y:11,size:2,  phrase:"Straight as a Rainbow"},
+    {id:"c5",x:78,y:14,size:2.5,phrase:"I gotta keep up appearances"},
+  ], lines:[["c1","c2"],["c2","c3"],["c3","c4"],["c4","c5"]]},
+  { name:"BigDipper", stars:[
+    {id:"d1",x:12,y:20,size:2.5,phrase:"By God!"},
+    {id:"d2",x:17,y:18,size:2.5,phrase:"It'd be rude to say yes!"},
+    {id:"d3",x:17,y:23,size:2,  phrase:"Bigger Galaxies..."},
+    {id:"d4",x:12,y:25,size:2,  phrase:"More Mass!"},
+    {id:"d5",x:22,y:17,size:2.5,phrase:"A man has his needs"},
+    {id:"d6",x:26,y:15,size:2,  phrase:"Hard STOP"},
+    {id:"d7",x:30,y:14,size:2,  phrase:"Kinks, sausages, and flutes(#veryserious)"},
+  ], lines:[["d1","d2"],["d2","d3"],["d3","d4"],["d4","d1"],["d2","d5"],["d5","d6"],["d6","d7"]]},
+  { name:"Planets", stars:[
+    {id:"p1",x:72,y:42,size:4,  phrase:"Would you care for a breath mint?"},
+    {id:"p2",x:79,y:38,size:3,  phrase:"Le burger"},
+    {id:"p3",x:85,y:44,size:3.5,phrase:"I'm...overwhelmed"},
+    {id:"p4",x:82,y:51,size:2.5,phrase:"Somethinggggg (r)wisible?"},
+    {id:"p5",x:74,y:50,size:2,  phrase:"No news is bad news"},
+    {id:"p6",x:89,y:37,size:2,  phrase:"Surely(Shirley)"},
+  ], lines:[["p1","p2"],["p2","p3"],["p3","p4"],["p4","p5"],["p5","p1"],["p2","p6"]]},
+  { name:"SpiralArm", stars:[
+    {id:"s1",x:45,y:72,size:2,  phrase:"In the civilized latitudes"},
+    {id:"s2",x:50,y:68,size:2.5,phrase:"sorry WHAT?"},
+    {id:"s3",x:55,y:66,size:3,  phrase:"Goin' Just Going'"},
+    {id:"s4",x:60,y:65,size:2.5,phrase:"More soon!"},
+    {id:"s5",x:65,y:67,size:2,  phrase:"Use Lube the way it's intended"},
+    {id:"s6",x:69,y:72,size:2,  phrase:"How's your thes...?"},
+    {id:"s7",x:48,y:78,size:1.8,phrase:"Those poor sick blind kids"},
+    {id:"s8",x:57,y:76,size:1.8,phrase:"ERECTION!"},
+  ], lines:[["s1","s2"],["s2","s3"],["s3","s4"],["s4","s5"],["s5","s6"],["s1","s7"],["s7","s8"],["s8","s4"]]},
+  { name:"Scatter", stars:[
+    {id:"w1",x:8, y:55,size:1.8,phrase:"I'm great with the muddler"},
+    {id:"w2",x:90,y:62,size:2,  phrase:"What went so wrong?"},
+    {id:"w3",x:42,y:22,size:1.5,phrase:"Horn-y"},
+    {id:"w4",x:50,y:85,size:1.8,phrase:"What's good food without a little adrenaline and fear for your life?"},
+    {id:"w5",x:15,y:72,size:1.5,phrase:"I fixed my ballcock, and you got your ass fingered"},
+    {id:"w6",x:88,y:82,size:1.5,phrase:"Poorly evolved"},
+    {id:"w7",x:35,y:88,size:1.5,phrase:"You're becoming a Queeaa(r)"},
+  ], lines:[]},
 ];
 
-const sky = document.getElementById('sky');
+// ── BUILD STAR MAP ────────────────────────
+const sky   = document.getElementById('sky');
 const svgEl = document.getElementById('constellation-lines');
-
 const starById = {};
-groups.forEach(g => g.stars.forEach(s => starById[s.id] = s));
+groups.forEach(g => g.stars.forEach(s => starById[s.id]=s));
 
 groups.forEach(g => {
-  g.lines.forEach(([a, b]) => {
-    const sa = starById[a], sb = starById[b];
-    if (!sa || !sb) return;
-    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1', sa.x + '%');
-    line.setAttribute('y1', sa.y + '%');
-    line.setAttribute('x2', sb.x + '%');
-    line.setAttribute('y2', sb.y + '%');
-    line.setAttribute('stroke', 'rgba(184,160,232,0.18)');
-    line.setAttribute('stroke-width', '0.8');
-    line.setAttribute('stroke-dasharray', '3 4');
+  g.lines.forEach(([a,b]) => {
+    const sa=starById[a], sb=starById[b]; if(!sa||!sb) return;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',sa.x+'%'); line.setAttribute('y1',sa.y+'%');
+    line.setAttribute('x2',sb.x+'%'); line.setAttribute('y2',sb.y+'%');
+    line.setAttribute('stroke','rgba(184,160,232,0.18)');
+    line.setAttribute('stroke-width','0.8');
+    line.setAttribute('stroke-dasharray','3 4');
     svgEl.appendChild(line);
   });
 });
 
 groups.forEach(g => {
   g.stars.forEach(s => {
-    const dur   = (2.5 + Math.random() * 3).toFixed(2) + 's';
-    const delay = (Math.random() * 4).toFixed(2) + 's';
-    const el = document.createElement('div');
-    el.className = 'star';
-    el.style.left = s.x + '%';
-    el.style.top  = s.y + '%';
-    if (s.y < 20) el.classList.add('flip-down');
-    el.innerHTML = `
-      <div class="star-dot" style="width:${s.size}px;height:${s.size}px;--twinkle-dur:${dur};--twinkle-delay:${delay};"></div>
-      <div class="phrase-card">${s.phrase}</div>
-    `;
+    const dur=(2.5+Math.random()*3).toFixed(2)+'s';
+    const delay=(Math.random()*4).toFixed(2)+'s';
+    const el=document.createElement('div');
+    el.className='star';
+    el.style.left=s.x+'%'; el.style.top=s.y+'%';
+    if(s.y<20) el.classList.add('flip-down');
+    el.innerHTML=`<div class="star-dot" style="width:${s.size}px;height:${s.size}px;--twinkle-dur:${dur};--twinkle-delay:${delay};"></div><div class="phrase-card">${s.phrase}</div>`;
     sky.appendChild(el);
   });
 });
 
-for (let i = 0; i < 160; i++) {
-  const d = document.createElement('div');
-  d.className = 'bg-star';
-  const sz = Math.random() * 1.2 + 0.3;
-  d.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;opacity:${(Math.random()*0.5+0.15).toFixed(2)};--t:${(2+Math.random()*5).toFixed(1)}s;--d:${(Math.random()*6).toFixed(1)}s;`;
+for(let i=0;i<160;i++){
+  const d=document.createElement('div'); d.className='bg-star';
+  const sz=Math.random()*1.2+0.3;
+  d.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;opacity:${(Math.random()*0.5+0.15).toFixed(2)};--t:${(2+Math.random()*5).toFixed(1)}s;--d:${(Math.random()*6).toFixed(1)}s;`;
   document.querySelector('.nebula').appendChild(d);
 }
 
-// ── Tap/click to lock card open ──
-document.querySelectorAll('.star').forEach(star => {
-  star.addEventListener('click', e => {
-    e.stopPropagation();
-    const isActive = star.classList.contains('active');
-    // close all others
-    document.querySelectorAll('.star.active').forEach(s => s.classList.remove('active'));
-    // toggle this one
-    if (!isActive) star.classList.add('active');
+function initStarTaps(){
+  document.querySelectorAll('.star').forEach(star=>{
+    star.addEventListener('click',e=>{
+      e.stopPropagation();
+      const isActive=star.classList.contains('active');
+      document.querySelectorAll('.star.active').forEach(s=>s.classList.remove('active'));
+      if(!isActive) star.classList.add('active');
+    });
   });
+  document.addEventListener('click',()=>{
+    document.querySelectorAll('.star.active').forEach(s=>s.classList.remove('active'));
+  });
+}
+
+// ── INTRO TWINKLING STARS ─────────────────
+const introBg = document.getElementById('intro-bg');
+for(let i=0;i<220;i++){
+  const s=document.createElement('div');
+  s.className='intro-star';
+  const sz=Math.random()*1.6+0.2;
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${(Math.random()*0.6+0.1).toFixed(2)};--t:${(2+Math.random()*5).toFixed(1)}s;--d:${(Math.random()*6).toFixed(1)}s;`;
+  introBg.appendChild(s);
+}
+
+// ── SLIDES ────────────────────────────────
+const slides = [
+  null, // slide 0 = Begin Journey screen
+  "We first met on December 30th, 2025.",
+  "Today is April 9th, 2026.",
+  "And it has been 100 days since we first met.",
+  "I first responded to you on Hinge on November 24th, 2025.",
+  "After a quick exchange on the 29th…",
+  "You ghosted me until the 20th of December, upon your return from Chile.",
+  "Oh how life likes to foreshadow stuff :P",
+  "Anyways…",
+  "Thank you for sharing so many wonderful memories with me over the past 100 days.",
+  "I hope I have brought at least some sense of joy into your life, as well as many a memorable moments — just like you've brought to me.",
+  "Enjoy this little collection of memory fragments.",
+  "WARP"
+];
+
+let slideIndex = 0;
+
+const intro       = document.getElementById('intro');
+const beginBlock  = document.getElementById('begin-block');
+const introMsg    = document.getElementById('intro-message');
+const introTap    = document.getElementById('intro-tap');
+
+function fadeInText(text){
+  introMsg.style.display = 'block';
+  introMsg.style.opacity = '0';
+  introMsg.textContent   = text;
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{ introMsg.style.opacity = '1'; });
+  });
+}
+
+function clearText(cb){
+  introMsg.style.opacity = '0';
+  setTimeout(()=>{ introMsg.textContent = ''; if(cb) cb(); }, 1200);
+}
+
+function hideBeignBlock(cb){
+  beginBlock.style.opacity = '0';
+  setTimeout(()=>{ beginBlock.style.display = 'none'; if(cb) cb(); }, 500);
+}
+
+function advanceSlide(){
+  slideIndex++;
+  if(slideIndex >= slides.length) return;
+
+  const text = slides[slideIndex];
+
+  if(slideIndex === 1){
+    hideBeignBlock(()=> clearText(()=> fadeInText(text)));
+    return;
+  }
+
+  if(text === 'WARP'){
+    introTap.style.display = 'none';
+    clearText(()=> doWarp());
+    return;
+  }
+
+  if(text){ clearText(()=> fadeInText(text)); }
+}
+
+intro.addEventListener('click', advanceSlide);
+
+document.getElementById('intro-skip').addEventListener('click', e => {
+  e.stopPropagation();
+  e.preventDefault();
+  intro.removeEventListener('click', advanceSlide);
+  document.getElementById('intro-tap').style.display = 'none';
+  document.getElementById('intro-skip').style.display = 'none';
+  document.getElementById('begin-block').style.display = 'none';
+  document.getElementById('intro-message').style.opacity = '0';
+  setTimeout(()=> doWarp(), 300);
 });
 
-// tap empty space to close
-document.addEventListener('click', () => {
-  document.querySelectorAll('.star.active').forEach(s => s.classList.remove('active'));
-});
+// ── WARP ──────────────────────────────────
+function doWarp(){
+  const warpEl = document.getElementById('warp');
+  const canvas = document.getElementById('warp-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+  // fill black first so streaks are visible from frame 1
+  ctx.fillStyle = '#04061a';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  warpEl.style.opacity = '1';
+  const cx=canvas.width/2, cy=canvas.height/2;
+  const streaks=Array.from({length:320},()=>{
+    const angle=Math.random()*Math.PI*2;
+    const dist=Math.random()*0.4+0.05;
+    return{x:cx+Math.cos(angle)*canvas.width*dist, y:cy+Math.sin(angle)*canvas.height*dist, angle, speed:Math.random()*2+0.5, len:0, alpha:Math.random()*0.6+0.4};
+  });
+
+  let frame=0; const totalFrames=120;
+  function drawWarp(){
+    // dark trail so streaks accumulate nicely
+    ctx.fillStyle='rgba(4,6,26,0.25)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    const progress=frame/totalFrames;
+    streaks.forEach(s=>{
+      const spd=s.speed*(1+progress*18);
+      s.x+=Math.cos(s.angle)*spd; s.y+=Math.sin(s.angle)*spd;
+      s.len=Math.min(s.len+spd*2,120);
+      const tail = {x: s.x-Math.cos(s.angle)*s.len, y: s.y-Math.sin(s.angle)*s.len};
+      const grad=ctx.createLinearGradient(tail.x,tail.y,s.x,s.y);
+      grad.addColorStop(0,'rgba(255,255,255,0)');
+      grad.addColorStop(1,`rgba(200,220,255,${s.alpha*Math.min(progress*3,1)})`);
+      ctx.beginPath(); ctx.strokeStyle=grad;
+      ctx.lineWidth=Math.random()<0.08?2:1;
+      ctx.moveTo(tail.x,tail.y); ctx.lineTo(s.x,s.y); ctx.stroke();
+    });
+
+    // flash only in the last 20% of frames
+    if(progress>0.80){
+      const f=(progress-0.80)/0.20;
+      ctx.fillStyle=`rgba(215,228,255,${f*0.95})`;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+
+    frame++;
+    if(frame<totalFrames){ requestAnimationFrame(drawWarp); }
+    else{
+      intro.style.transition='opacity 0.7s ease'; intro.style.opacity='0';
+      setTimeout(()=>{
+        intro.style.display='none';
+        warpEl.style.transition='opacity 0.8s ease'; warpEl.style.opacity='0';
+        document.querySelector('.title').classList.add('visible');
+        document.querySelector('.hint').classList.add('visible');
+        initStarTaps();
+      },700);
+    }
+  }
+  requestAnimationFrame(drawWarp);
+}
 </script>
 
 </body>
