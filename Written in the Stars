@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Things We've Said</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+:root {
+  --navy: #04061a;
+  --deep: #080b2a;
+  --nebula-purple: #2d1b5e;
+  --nebula-rose: #5c1a3a;
+  --nebula-blue: #0d2b6e;
+  --star-core: #ffffff;
+  --star-glow: #c8d8ff;
+  --accent-gold: #f0c060;
+  --accent-lavender: #b8a0e8;
+  --text-card: #f0eaff;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--navy);
+  overflow: hidden;
+  font-family: 'Cormorant Garamond', serif;
+  cursor: crosshair;
+}
+
+/* ── Nebula background ── */
+.nebula {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(45,27,94,0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 80% 70%, rgba(92,26,58,0.45) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 50% at 55% 15%, rgba(13,43,110,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 10% 80%, rgba(45,27,94,0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 40% at 90% 20%, rgba(92,26,58,0.25) 0%, transparent 65%),
+    var(--navy);
+}
+
+/* grain overlay */
+.nebula::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ── Title ── */
+.title {
+  position: fixed;
+  top: 38px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.title h1 {
+  font-family: 'Cinzel', serif;
+  font-weight: 400;
+  font-size: clamp(13px, 1.6vw, 20px);
+  letter-spacing: 0.22em;
+  color: var(--accent-lavender);
+  text-transform: uppercase;
+  opacity: 0.9;
+  text-shadow: 0 0 30px rgba(184,160,232,0.5);
+}
+
+.title .subtitle {
+  margin-top: 6px;
+  font-size: clamp(11px, 1vw, 14px);
+  letter-spacing: 0.35em;
+  color: rgba(200,216,255,0.35);
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.title-line {
+  margin: 10px auto 0;
+  width: 120px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-lavender), transparent);
+  opacity: 0.4;
+}
+
+/* ── Sky canvas ── */
+#sky {
+  position: fixed; inset: 0; z-index: 1;
+}
+
+/* ── Constellation SVG lines ── */
+#constellation-lines {
+  position: fixed; inset: 0; z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Stars ── */
+.star {
+  position: fixed;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.star-dot {
+  border-radius: 50%;
+  background: var(--star-core);
+  box-shadow:
+    0 0 3px 1px rgba(200,216,255,0.8),
+    0 0 8px 2px rgba(184,160,232,0.4),
+    0 0 16px 4px rgba(100,120,255,0.2);
+  animation: twinkle var(--twinkle-dur, 3s) ease-in-out infinite;
+  animation-delay: var(--twinkle-delay, 0s);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  40%       { opacity: 0.4; transform: scale(0.7); }
+  70%       { opacity: 0.85; transform: scale(0.95); }
+}
+
+.star:hover .star-dot {
+  animation-play-state: paused;
+  transform: scale(2.5);
+  box-shadow:
+    0 0 6px 3px rgba(255,255,255,0.95),
+    0 0 18px 8px rgba(200,216,255,0.7),
+    0 0 40px 16px rgba(184,160,232,0.45),
+    0 0 70px 25px rgba(100,120,255,0.25);
+}
+
+/* ── Phrase card ── */
+.phrase-card {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: rgba(8, 6, 30, 0.82);
+  border: 1px solid rgba(184,160,232,0.25);
+  border-radius: 10px;
+  padding: 12px 18px;
+  width: max-content;
+  max-width: 220px;
+  text-align: center;
+  color: var(--text-card);
+  font-size: 13.5px;
+  font-style: italic;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 20px rgba(184,160,232,0.12),
+    0 4px 24px rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  white-space: normal;
+}
+
+.phrase-card::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(184,160,232,0.25);
+}
+
+.star:hover .phrase-card {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+/* card that would go off-screen top → flip below */
+.star.flip-down .phrase-card {
+  bottom: auto;
+  top: calc(100% + 14px);
+  transform: translateX(-50%) translateY(-6px);
+}
+.star.flip-down:hover .phrase-card {
+  transform: translateX(-50%) translateY(0);
+}
+.star.flip-down .phrase-card::after {
+  top: auto; bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: rgba(184,160,232,0.25);
+}
+
+/* ── Background micro-stars ── */
+.bg-star {
+  position: fixed;
+  border-radius: 50%;
+  background: white;
+  pointer-events: none;
+  z-index: 1;
+  animation: twinkle var(--t,4s) ease-in-out infinite;
+  animation-delay: var(--d,0s);
+}
+
+/* ── Hint ── */
+.hint {
+  position: fixed;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: rgba(184,160,232,0.3);
+  text-transform: uppercase;
+  pointer-events: none;
+  animation: fadeHint 6s ease forwards;
+}
+@keyframes fadeHint {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+```
+
+  </style>
+</head>
+<body>
+
+  <div class="nebula"></div>
+
+  <div class="title">
+    <h1>The Things We've Said</h1>
+    <div class="subtitle">past 100 days</div>
+    <div class="title-line"></div>
+  </div>
+
+<svg id="constellation-lines" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <div id="sky"></div>
+
+  <div class="hint">hover over a star</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  STAR DATA
+//  positions are in % of viewport (left, top)
+//  phrase: fill these in — 40 slots ready
+// ─────────────────────────────────────────────
+const groups = [
+  {
+    name: "Orion",
+    // 7 stars: belt (3) + shoulders + feet + head
+    stars: [
+      { id: "o1",  x: 28,   y: 38,   size: 3.5, phrase: "Fruitcakes and Snowflakes" },
+      { id: "o2",  x: 31,   y: 42,   size: 3,   phrase: "A young Whippersnapper" },
+      { id: "o3",  x: 34,   y: 46,   size: 3.5, phrase: "✨Jazz Hands✨" },
+      { id: "o4",  x: 24,   y: 32,   size: 2.5, phrase: "Sawing Logs" },
+      { id: "o5",  x: 37,   y: 31,   size: 2.5, phrase: "Yes! And..." },
+      { id: "o6",  x: 26,   y: 57,   size: 2,   phrase: "Let's make like a tree!" },
+      { id: "o7",  x: 36,   y: 55,   size: 2,   phrase: "What the hay!" },
+    ],
+    lines: [
+      ["o1","o2"],["o2","o3"],
+      ["o4","o1"],["o5","o3"],
+      ["o1","o6"],["o3","o7"],
+      ["o4","o5"],
+    ]
+  },
+  {
+    name: "Cassiopeia",
+    // W-shape, 5 stars
+    stars: [
+      { id: "c1",  x: 58,   y: 14,   size: 2.5, phrase: "Call me Dick(Richard)!" },
+      { id: "c2",  x: 63,   y: 11,   size: 3,   phrase: "'I've never been with a man before'" },
+      { id: "c3",  x: 68,   y: 14,   size: 2.5, phrase: "Deeply Closeted" },
+      { id: "c4",  x: 73,   y: 11,   size: 2,   phrase: "Straight as a Rainbow" },
+      { id: "c5",  x: 78,   y: 14,   size: 2.5, phrase: "I gotta keep up appearances" },
+    ],
+    lines: [["c1","c2"],["c2","c3"],["c3","c4"],["c4","c5"]]
+  },
+  {
+    name: "BigDipper",
+    // 7 stars: bowl + handle
+    stars: [
+      { id: "d1",  x: 12,   y: 20,   size: 2.5, phrase: "By God!" },
+      { id: "d2",  x: 17,   y: 18,   size: 2.5, phrase: "It'd be rude to say yes!" },
+      { id: "d3",  x: 17,   y: 23,   size: 2,   phrase: "Bigger Galaxies..." },
+      { id: "d4",  x: 12,   y: 25,   size: 2,   phrase: "More Mass!" },
+      { id: "d5",  x: 22,   y: 17,   size: 2.5, phrase: "A man has his needs" },
+      { id: "d6",  x: 26,   y: 15,   size: 2,   phrase: "Hard STOP" },
+      { id: "d7",  x: 30,   y: 14,   size: 2,   phrase: "Kinks, sausages, and flutes(#veryserious)" },
+    ],
+    lines: [
+      ["d1","d2"],["d2","d3"],["d3","d4"],["d4","d1"],
+      ["d2","d5"],["d5","d6"],["d6","d7"]
+    ]
+  },
+  {
+    name: "Planets",
+    // Loose planetary cluster — softer, more spaced
+    stars: [
+      { id: "p1",  x: 72,   y: 42,   size: 4,   phrase: "Would you care for a breath mint?" },
+      { id: "p2",  x: 79,   y: 38,   size: 3,   phrase: "Le burger" },
+      { id: "p3",  x: 85,   y: 44,   size: 3.5, phrase: "I'm...overwhelmed" },
+      { id: "p4",  x: 82,   y: 51,   size: 2.5, phrase: "Somethinggggg (r)wisible?" },
+      { id: "p5",  x: 74,   y: 50,   size: 2,   phrase: "No news is bad news" },
+      { id: "p6",  x: 89,   y: 37,   size: 2,   phrase: "Surely(Shirley)" },
+    ],
+    lines: [
+      ["p1","p2"],["p2","p3"],["p3","p4"],["p4","p5"],["p5","p1"],["p2","p6"]
+    ]
+  },
+  {
+    name: "SpiralArm",
+    // Gentle arc — feels like a galaxy arm
+    stars: [
+      { id: "s1",  x: 45,   y: 72,   size: 2,   phrase: "In the civilized latitudes" },
+      { id: "s2",  x: 50,   y: 68,   size: 2.5, phrase: "sorry WHAT?" },
+      { id: "s3",  x: 55,   y: 66,   size: 3,   phrase: "Goin' Just Going'" },
+      { id: "s4",  x: 60,   y: 65,   size: 2.5, phrase: "More soon!" },
+      { id: "s5",  x: 65,   y: 67,   size: 2,   phrase: "Use Lube the way it's intended" },
+      { id: "s6",  x: 69,   y: 72,   size: 2,   phrase: "How's your thes...?" },
+      { id: "s7",  x: 48,   y: 78,   size: 1.8, phrase: "Those poor sick blind kids" },
+      { id: "s8",  x: 57,   y: 76,   size: 1.8, phrase: "ERECTION!" },
+    ],
+    lines: [
+      ["s1","s2"],["s2","s3"],["s3","s4"],["s4","s5"],["s5","s6"],
+      ["s1","s7"],["s7","s8"],["s8","s4"]
+    ]
+  },
+  {
+    name: "Scatter",
+    // 7 lone wandering stars — no lines
+    stars: [
+      { id: "w1",  x: 8,    y: 55,   size: 1.8, phrase: "I'm great with the muddler" },
+      { id: "w2",  x: 90,   y: 62,   size: 2,   phrase: "What went so wrong?" },
+      { id: "w3",  x: 42,   y: 22,   size: 1.5, phrase: "Horn-y" },
+      { id: "w4",  x: 50,   y: 85,   size: 1.8, phrase: "What's good food without a little adrenaline and fear for your life?" },
+      { id: "w5",  x: 15,   y: 72,   size: 1.5, phrase: "I fixed my ballcock, and you got your ass fingered" },
+      { id: "w6",  x: 88,   y: 82,   size: 1.5, phrase: "Poorly evolved" },
+      { id: "w7",  x: 35,   y: 88,   size: 1.5, phrase: "You're becoming a Queeaa(r)" },
+    ],
+    lines: []
+  }
+];
+
+// ─────────────────────────────────────────────
+//  BUILD STARS
+// ─────────────────────────────────────────────
+const sky = document.getElementById('sky');
+const svgEl = document.getElementById('constellation-lines');
+
+// index stars by id for line drawing
+const starById = {};
+groups.forEach(g => g.stars.forEach(s => starById[s.id] = s));
+
+// draw constellation lines first (behind stars)
+groups.forEach(g => {
+  g.lines.forEach(([a, b]) => {
+    const sa = starById[a], sb = starById[b];
+    if (!sa || !sb) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', sa.x + '%');
+    line.setAttribute('y1', sa.y + '%');
+    line.setAttribute('x2', sb.x + '%');
+    line.setAttribute('y2', sb.y + '%');
+    line.setAttribute('stroke', 'rgba(184,160,232,0.18)');
+    line.setAttribute('stroke-width', '0.8');
+    line.setAttribute('stroke-dasharray', '3 4');
+    svgEl.appendChild(line);
+  });
+});
+
+// create star elements
+let globalIdx = 0;
+groups.forEach(g => {
+  g.stars.forEach(s => {
+    const dur   = (2.5 + Math.random() * 3).toFixed(2) + 's';
+    const delay = (Math.random() * 4).toFixed(2) + 's';
+
+    const el = document.createElement('div');
+    el.className = 'star';
+    el.style.left = s.x + '%';
+    el.style.top  = s.y + '%';
+
+    // flip card downward if near top
+    if (s.y < 20) el.classList.add('flip-down');
+
+    el.innerHTML = `
+      <div class="star-dot" style="
+        width:${s.size}px;
+        height:${s.size}px;
+        --twinkle-dur:${dur};
+        --twinkle-delay:${delay};
+      "></div>
+      <div class="phrase-card">${s.phrase}</div>
+    `;
+    sky.appendChild(el);
+    globalIdx++;
+  });
+});
+
+// ─────────────────────────────────────────────
+//  BACKGROUND MICRO-STARS
+// ─────────────────────────────────────────────
+const bgCount = 160;
+for (let i = 0; i < bgCount; i++) {
+  const d = document.createElement('div');
+  d.className = 'bg-star';
+  const sz = Math.random() * 1.2 + 0.3;
+  d.style.cssText = `
+    left:${Math.random()*100}%;
+    top:${Math.random()*100}%;
+    width:${sz}px;
+    height:${sz}px;
+    opacity:${(Math.random()*0.5+0.15).toFixed(2)};
+    --t:${(2+Math.random()*5).toFixed(1)}s;
+    --d:${(Math.random()*6).toFixed(1)}s;
+  `;
+  document.querySelector('.nebula').appendChild(d);
+}
+</script>
+
+</body>
+</html>
