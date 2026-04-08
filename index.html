@@ -25,7 +25,7 @@
 
 html, body {
   width: 100%; height: 100%;
-  background: var(--navy);
+  background-color: #04061a !important;
   overflow: hidden;
   font-family: 'Cormorant Garamond', serif;
   cursor: crosshair;
@@ -34,13 +34,13 @@ html, body {
 /* ── Nebula background ── */
 .nebula {
   position: fixed; inset: 0; z-index: 0;
-  background:
+  background-color: #04061a;
+  background-image:
     radial-gradient(ellipse 60% 40% at 20% 30%, rgba(45,27,94,0.55) 0%, transparent 70%),
     radial-gradient(ellipse 50% 35% at 80% 70%, rgba(92,26,58,0.45) 0%, transparent 65%),
     radial-gradient(ellipse 70% 50% at 55% 15%, rgba(13,43,110,0.4) 0%, transparent 70%),
     radial-gradient(ellipse 40% 30% at 10% 80%, rgba(45,27,94,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 55% 40% at 90% 20%, rgba(92,26,58,0.25) 0%, transparent 65%),
-    var(--navy);
+    radial-gradient(ellipse 55% 40% at 90% 20%, rgba(92,26,58,0.25) 0%, transparent 65%);
 }
 
 /* grain overlay */
@@ -181,7 +181,6 @@ html, body {
   pointer-events: auto;
 }
 
-/* card that would go off-screen top → flip below */
 .star.flip-down .phrase-card {
   bottom: auto;
   top: calc(100% + 14px);
@@ -237,7 +236,7 @@ html, body {
 
   <div class="title">
     <h1>The Things We've Said</h1>
-    <div class="subtitle">past 100 days</div>
+    <div class="subtitle">in the past 100 days</div>
     <div class="title-line"></div>
   </div>
 
@@ -248,120 +247,91 @@ html, body {
   <div class="hint">hover over a star</div>
 
 <script>
-// ─────────────────────────────────────────────
-//  STAR DATA
-//  positions are in % of viewport (left, top)
-//  phrase: fill these in — 40 slots ready
-// ─────────────────────────────────────────────
 const groups = [
   {
     name: "Orion",
-    // 7 stars: belt (3) + shoulders + feet + head
     stars: [
-      { id: "o1",  x: 28,   y: 38,   size: 3.5, phrase: "Fruitcakes and Snowflakes" },
-      { id: "o2",  x: 31,   y: 42,   size: 3,   phrase: "A young Whippersnapper" },
-      { id: "o3",  x: 34,   y: 46,   size: 3.5, phrase: "✨Jazz Hands✨" },
-      { id: "o4",  x: 24,   y: 32,   size: 2.5, phrase: "Sawing Logs" },
-      { id: "o5",  x: 37,   y: 31,   size: 2.5, phrase: "Yes! And..." },
-      { id: "o6",  x: 26,   y: 57,   size: 2,   phrase: "Let's make like a tree!" },
-      { id: "o7",  x: 36,   y: 55,   size: 2,   phrase: "What the hay!" },
+      { id: "o1", x: 28, y: 38, size: 3.5, phrase: "Fruitcakes and Snowflakes" },
+      { id: "o2", x: 31, y: 42, size: 3,   phrase: "A young Whippersnapper" },
+      { id: "o3", x: 34, y: 46, size: 3.5, phrase: "✨Jazz Hands✨" },
+      { id: "o4", x: 24, y: 32, size: 2.5, phrase: "Sawing Logs" },
+      { id: "o5", x: 37, y: 31, size: 2.5, phrase: "Yes! And..." },
+      { id: "o6", x: 26, y: 57, size: 2,   phrase: "Let's make like a tree!" },
+      { id: "o7", x: 36, y: 55, size: 2,   phrase: "What the hay!" },
     ],
-    lines: [
-      ["o1","o2"],["o2","o3"],
-      ["o4","o1"],["o5","o3"],
-      ["o1","o6"],["o3","o7"],
-      ["o4","o5"],
-    ]
+    lines: [["o1","o2"],["o2","o3"],["o4","o1"],["o5","o3"],["o1","o6"],["o3","o7"],["o4","o5"]]
   },
   {
     name: "Cassiopeia",
-    // W-shape, 5 stars
     stars: [
-      { id: "c1",  x: 58,   y: 14,   size: 2.5, phrase: "Call me Dick(Richard)!" },
-      { id: "c2",  x: 63,   y: 11,   size: 3,   phrase: "'I've never been with a man before'" },
-      { id: "c3",  x: 68,   y: 14,   size: 2.5, phrase: "Deeply Closeted" },
-      { id: "c4",  x: 73,   y: 11,   size: 2,   phrase: "Straight as a Rainbow" },
-      { id: "c5",  x: 78,   y: 14,   size: 2.5, phrase: "I gotta keep up appearances" },
+      { id: "c1", x: 58, y: 14, size: 2.5, phrase: "Call me Dick(Richard)!" },
+      { id: "c2", x: 63, y: 11, size: 3,   phrase: "'I've never been with a man before'" },
+      { id: "c3", x: 68, y: 14, size: 2.5, phrase: "Deeply Closeted" },
+      { id: "c4", x: 73, y: 11, size: 2,   phrase: "Straight as a Rainbow" },
+      { id: "c5", x: 78, y: 14, size: 2.5, phrase: "I gotta keep up appearances" },
     ],
     lines: [["c1","c2"],["c2","c3"],["c3","c4"],["c4","c5"]]
   },
   {
     name: "BigDipper",
-    // 7 stars: bowl + handle
     stars: [
-      { id: "d1",  x: 12,   y: 20,   size: 2.5, phrase: "By God!" },
-      { id: "d2",  x: 17,   y: 18,   size: 2.5, phrase: "It'd be rude to say yes!" },
-      { id: "d3",  x: 17,   y: 23,   size: 2,   phrase: "Bigger Galaxies..." },
-      { id: "d4",  x: 12,   y: 25,   size: 2,   phrase: "More Mass!" },
-      { id: "d5",  x: 22,   y: 17,   size: 2.5, phrase: "A man has his needs" },
-      { id: "d6",  x: 26,   y: 15,   size: 2,   phrase: "Hard STOP" },
-      { id: "d7",  x: 30,   y: 14,   size: 2,   phrase: "Kinks, sausages, and flutes(#veryserious)" },
+      { id: "d1", x: 12, y: 20, size: 2.5, phrase: "By God!" },
+      { id: "d2", x: 17, y: 18, size: 2.5, phrase: "It'd be rude to say yes!" },
+      { id: "d3", x: 17, y: 23, size: 2,   phrase: "Bigger Galaxies..." },
+      { id: "d4", x: 12, y: 25, size: 2,   phrase: "More Mass!" },
+      { id: "d5", x: 22, y: 17, size: 2.5, phrase: "A man has his needs" },
+      { id: "d6", x: 26, y: 15, size: 2,   phrase: "Hard STOP" },
+      { id: "d7", x: 30, y: 14, size: 2,   phrase: "Kinks, sausages, and flutes(#veryserious)" },
     ],
-    lines: [
-      ["d1","d2"],["d2","d3"],["d3","d4"],["d4","d1"],
-      ["d2","d5"],["d5","d6"],["d6","d7"]
-    ]
+    lines: [["d1","d2"],["d2","d3"],["d3","d4"],["d4","d1"],["d2","d5"],["d5","d6"],["d6","d7"]]
   },
   {
     name: "Planets",
-    // Loose planetary cluster — softer, more spaced
     stars: [
-      { id: "p1",  x: 72,   y: 42,   size: 4,   phrase: "Would you care for a breath mint?" },
-      { id: "p2",  x: 79,   y: 38,   size: 3,   phrase: "Le burger" },
-      { id: "p3",  x: 85,   y: 44,   size: 3.5, phrase: "I'm...overwhelmed" },
-      { id: "p4",  x: 82,   y: 51,   size: 2.5, phrase: "Somethinggggg (r)wisible?" },
-      { id: "p5",  x: 74,   y: 50,   size: 2,   phrase: "No news is bad news" },
-      { id: "p6",  x: 89,   y: 37,   size: 2,   phrase: "Surely(Shirley)" },
+      { id: "p1", x: 72, y: 42, size: 4,   phrase: "Would you care for a breath mint?" },
+      { id: "p2", x: 79, y: 38, size: 3,   phrase: "Le burger" },
+      { id: "p3", x: 85, y: 44, size: 3.5, phrase: "I'm...overwhelmed" },
+      { id: "p4", x: 82, y: 51, size: 2.5, phrase: "Somethinggggg (r)wisible?" },
+      { id: "p5", x: 74, y: 50, size: 2,   phrase: "No news is bad news" },
+      { id: "p6", x: 89, y: 37, size: 2,   phrase: "Surely(Shirley)" },
     ],
-    lines: [
-      ["p1","p2"],["p2","p3"],["p3","p4"],["p4","p5"],["p5","p1"],["p2","p6"]
-    ]
+    lines: [["p1","p2"],["p2","p3"],["p3","p4"],["p4","p5"],["p5","p1"],["p2","p6"]]
   },
   {
     name: "SpiralArm",
-    // Gentle arc — feels like a galaxy arm
     stars: [
-      { id: "s1",  x: 45,   y: 72,   size: 2,   phrase: "In the civilized latitudes" },
-      { id: "s2",  x: 50,   y: 68,   size: 2.5, phrase: "sorry WHAT?" },
-      { id: "s3",  x: 55,   y: 66,   size: 3,   phrase: "Goin' Just Going'" },
-      { id: "s4",  x: 60,   y: 65,   size: 2.5, phrase: "More soon!" },
-      { id: "s5",  x: 65,   y: 67,   size: 2,   phrase: "Use Lube the way it's intended" },
-      { id: "s6",  x: 69,   y: 72,   size: 2,   phrase: "How's your thes...?" },
-      { id: "s7",  x: 48,   y: 78,   size: 1.8, phrase: "Those poor sick blind kids" },
-      { id: "s8",  x: 57,   y: 76,   size: 1.8, phrase: "ERECTION!" },
+      { id: "s1", x: 45, y: 72, size: 2,   phrase: "In the civilized latitudes" },
+      { id: "s2", x: 50, y: 68, size: 2.5, phrase: "sorry WHAT?" },
+      { id: "s3", x: 55, y: 66, size: 3,   phrase: "Goin' Just Going'" },
+      { id: "s4", x: 60, y: 65, size: 2.5, phrase: "More soon!" },
+      { id: "s5", x: 65, y: 67, size: 2,   phrase: "Use Lube the way it's intended" },
+      { id: "s6", x: 69, y: 72, size: 2,   phrase: "How's your thes...?" },
+      { id: "s7", x: 48, y: 78, size: 1.8, phrase: "Those poor sick blind kids" },
+      { id: "s8", x: 57, y: 76, size: 1.8, phrase: "ERECTION!" },
     ],
-    lines: [
-      ["s1","s2"],["s2","s3"],["s3","s4"],["s4","s5"],["s5","s6"],
-      ["s1","s7"],["s7","s8"],["s8","s4"]
-    ]
+    lines: [["s1","s2"],["s2","s3"],["s3","s4"],["s4","s5"],["s5","s6"],["s1","s7"],["s7","s8"],["s8","s4"]]
   },
   {
     name: "Scatter",
-    // 7 lone wandering stars — no lines
     stars: [
-      { id: "w1",  x: 8,    y: 55,   size: 1.8, phrase: "I'm great with the muddler" },
-      { id: "w2",  x: 90,   y: 62,   size: 2,   phrase: "What went so wrong?" },
-      { id: "w3",  x: 42,   y: 22,   size: 1.5, phrase: "Horn-y" },
-      { id: "w4",  x: 50,   y: 85,   size: 1.8, phrase: "What's good food without a little adrenaline and fear for your life?" },
-      { id: "w5",  x: 15,   y: 72,   size: 1.5, phrase: "I fixed my ballcock, and you got your ass fingered" },
-      { id: "w6",  x: 88,   y: 82,   size: 1.5, phrase: "Poorly evolved" },
-      { id: "w7",  x: 35,   y: 88,   size: 1.5, phrase: "You're becoming a Queeaa(r)" },
+      { id: "w1", x: 8,  y: 55, size: 1.8, phrase: "I'm great with the muddler" },
+      { id: "w2", x: 90, y: 62, size: 2,   phrase: "What went so wrong?" },
+      { id: "w3", x: 42, y: 22, size: 1.5, phrase: "Horn-y" },
+      { id: "w4", x: 50, y: 85, size: 1.8, phrase: "What's good food without a little adrenaline and fear for your life?" },
+      { id: "w5", x: 15, y: 72, size: 1.5, phrase: "I fixed my ballcock, and you got your ass fingered" },
+      { id: "w6", x: 88, y: 82, size: 1.5, phrase: "Poorly evolved" },
+      { id: "w7", x: 35, y: 88, size: 1.5, phrase: "You're becoming a Queeaa(r)" },
     ],
     lines: []
   }
 ];
 
-// ─────────────────────────────────────────────
-//  BUILD STARS
-// ─────────────────────────────────────────────
 const sky = document.getElementById('sky');
 const svgEl = document.getElementById('constellation-lines');
 
-// index stars by id for line drawing
 const starById = {};
 groups.forEach(g => g.stars.forEach(s => starById[s.id] = s));
 
-// draw constellation lines first (behind stars)
 groups.forEach(g => {
   g.lines.forEach(([a, b]) => {
     const sa = starById[a], sb = starById[b];
@@ -378,52 +348,28 @@ groups.forEach(g => {
   });
 });
 
-// create star elements
-let globalIdx = 0;
 groups.forEach(g => {
   g.stars.forEach(s => {
     const dur   = (2.5 + Math.random() * 3).toFixed(2) + 's';
     const delay = (Math.random() * 4).toFixed(2) + 's';
-
     const el = document.createElement('div');
     el.className = 'star';
     el.style.left = s.x + '%';
     el.style.top  = s.y + '%';
-
-    // flip card downward if near top
     if (s.y < 20) el.classList.add('flip-down');
-
     el.innerHTML = `
-      <div class="star-dot" style="
-        width:${s.size}px;
-        height:${s.size}px;
-        --twinkle-dur:${dur};
-        --twinkle-delay:${delay};
-      "></div>
+      <div class="star-dot" style="width:${s.size}px;height:${s.size}px;--twinkle-dur:${dur};--twinkle-delay:${delay};"></div>
       <div class="phrase-card">${s.phrase}</div>
     `;
     sky.appendChild(el);
-    globalIdx++;
   });
 });
 
-// ─────────────────────────────────────────────
-//  BACKGROUND MICRO-STARS
-// ─────────────────────────────────────────────
-const bgCount = 160;
-for (let i = 0; i < bgCount; i++) {
+for (let i = 0; i < 160; i++) {
   const d = document.createElement('div');
   d.className = 'bg-star';
   const sz = Math.random() * 1.2 + 0.3;
-  d.style.cssText = `
-    left:${Math.random()*100}%;
-    top:${Math.random()*100}%;
-    width:${sz}px;
-    height:${sz}px;
-    opacity:${(Math.random()*0.5+0.15).toFixed(2)};
-    --t:${(2+Math.random()*5).toFixed(1)}s;
-    --d:${(Math.random()*6).toFixed(1)}s;
-  `;
+  d.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;opacity:${(Math.random()*0.5+0.15).toFixed(2)};--t:${(2+Math.random()*5).toFixed(1)}s;--d:${(Math.random()*6).toFixed(1)}s;`;
   document.querySelector('.nebula').appendChild(d);
 }
 </script>
